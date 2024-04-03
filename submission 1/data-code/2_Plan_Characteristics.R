@@ -669,7 +669,7 @@ macd.data.2015b=read_xls(macd.path.2015b,
 macd.data.2015 = rbind(macd.data.2015a,macd.data.2015b)
 
 
-for (y in 2007:2015) {
+for (y in 2010:2015) {
 
   ############ CLEAN MA-Only Data #####################
   ma.data=get(paste0("ma.data.",y))
@@ -716,7 +716,7 @@ for (y in 2007:2015) {
     full_join(macd.data, by=c("contractid", "planid", "state", "county")) %>%
     mutate(year=y)
   
-  if (y==2007) {
+  if (y==2010) {
     plan.premiums=ma.macd.data
   } else {
     plan.premiums=rbind(plan.premiums,ma.macd.data)

@@ -1,7 +1,7 @@
 ##############################################################################
 ## Read in MA star rating data 
 ##############################################################################
-source("data-code/rating_variables.R")
+source("submission 1/data-code/rating_variables.R")
 
 ## Assign yearly datasets and clean star rating information
 
@@ -58,6 +58,9 @@ star.data.2009 <- star.data.2009a %>%
   left_join(star.data.2009b, by=c("contractid")) %>%
   mutate(year=2009)
 
+
+install.packages("plyr")
+library(plyr)
 
 ## 2010
 ma.path.2010a <- paste0("data/input/ma-star-ratings/2010/2010_Part_C_Report_Card_Master_Table_2009_11_30_domain.csv")
@@ -281,7 +284,7 @@ star.data.2015 <- star.data.2015a %>%
 
 
 
-star.ratings <- plyr::rbind.fill(star.data.2008, star.data.2009, star.data.2010, star.data.2011,
+star.ratings <- plyr::rbind.fill(star.data.2010, star.data.2011,
                    star.data.2012, star.data.2013, star.data.2014, star.data.2015)
 star.ratings <- as_tibble(star.ratings)
 star.ratings <- star.ratings %>% 

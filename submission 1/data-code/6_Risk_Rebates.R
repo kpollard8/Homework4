@@ -139,7 +139,7 @@ risk.rebate.2015b=read_xlsx(ma.path.2015b,range="A4:H3755",
                                         "costsharing_partd"))
 
 
-for (y in 2006:2015) {
+for (y in 2010:2015) {
   risk.rebate.a=get(paste("risk.rebate.",y,"a",sep="")) %>%
     mutate_at(vars(c("riskscore_partc","payment_partc","rebate_partc")),
               ~as.numeric(str_replace_all(.,'/$',''))) %>%
@@ -161,8 +161,7 @@ for (y in 2006:2015) {
   
 }
 
-risk.rebate.final=rbind(risk.rebate.2006,risk.rebate.2007,risk.rebate.2008,
-                        risk.rebate.2009,risk.rebate.2010,risk.rebate.2011,
+risk.rebate.final=rbind(risk.rebate.2010,risk.rebate.2011,
                         risk.rebate.2012,risk.rebate.2013,risk.rebate.2014,
                         risk.rebate.2015)
 write_rds(risk.rebate.final,"data/output/risk_rebate.rds")
