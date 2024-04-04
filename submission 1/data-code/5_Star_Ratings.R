@@ -59,7 +59,7 @@ star.data.2009 <- star.data.2009a %>%
   mutate(year=2009)
 
 
-install.packages("plyr")
+
 library(plyr)
 
 ## 2010

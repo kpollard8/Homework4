@@ -66,7 +66,7 @@ for (y in 2010:2015) {
   ## Collapse to yearly data
   ma.penetration = ma.penetration %>%
     group_by(fips,state,county) %>%
-    summarize(avg_eligibles=mean(eligibles),sd_eligibles=sd(eligibles),
+    dplyr::summarize(avg_eligibles=mean(eligibles),sd_eligibles=sd(eligibles),
               min_eligibles=min(eligibles),max_eligibles=max(eligibles),
               first_eligibles=first(eligibles),last_eligibles=last(eligibles),
               avg_enrolled=mean(enrolled),sd_enrolled=sd(enrolled),
@@ -77,6 +77,5 @@ for (y in 2010:2015) {
   assign(paste0("ma.pene.",y),ma.penetration)  
 }
 
-ma.penetration.data=rbind(ma.pene.2010,
-                          ma.pene.2011,ma.pene.2012,ma.pene.2013,ma.pene.2014,ma.pene.2015)
+ma.penetration.data=rbind(ma.pene.2010,ma.pene.2011,ma.pene.2012,ma.pene.2013,ma.pene.2014,ma.pene.2015)
 write_rds(ma.penetration.data,"data/output/ma_penetration.rds")
