@@ -59,9 +59,6 @@ star.data.2009 <- star.data.2009a %>%
   mutate(year=2009)
 
 
-
-library(plyr)
-
 ## 2010
 ma.path.2010a <- paste0("data/input/ma-star-ratings/2010/2010_Part_C_Report_Card_Master_Table_2009_11_30_domain.csv")
 star.data.2010a <- read_csv(ma.path.2010a,
