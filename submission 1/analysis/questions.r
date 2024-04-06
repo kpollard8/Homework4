@@ -134,8 +134,8 @@ question4
 # Calculate the running variable underlying the star rating. 
 # Provide a table showing the number of plans that are rounded up into a 3-star, 3.5-star, 4-star, 4.5-star, and 5-star rating.
 
-
 ma.data <- read_rds("data/output/final_ma_data.rds")
+
 ma.data.clean <- ma.data %>%
   filter(!is.na(avg_enrollment) & year==2010 & !is.na(partc_score)) 
 
@@ -173,15 +173,100 @@ print(star_rating_counts)
 # Using the RD estimator with a bandwidth of 0.125, provide an estimate of the effect of receiving a 3-star versus a 2.5 star rating on enrollments. 
 #Repeat the exercise to estimate the effects at 3.5 stars, and summarize your results in a table.
 
-#Question 7 
-#Repeat your results for bandwidhts of 0.1, 0.12, 0.13, 0.14, and 0.15 (again for 3 and 3.5 stars). 
-# Show all of the results in a graph. How sensitive are your findings to the choice of bandwidth?
+# Install the 'rdrobust' package if not already installed
+if (!require("rdrobust")) install.packages("rdrobust")
+
+# Load the 'rdrobust' package
+library(rdrobust)
+
+# Estimate the effect of receiving a 3-star versus a 2.5-star rating
+ma.rd3 <- ma.data.clean %>%
+  filter(Star_Rating==2.5 | Star_Rating==3) %>%
+  mutate(score = raw_rating - 3,
+         treat = (score>=0),
+         window1 = (score>=-.125 & score<=.125),
+         window2 = (score>=-.125 & score<=.125),
+         mkt_share = avg_enrollment/avg_eligibles,
+         ln_share = log(mkt_share),
+         score_treat=score*treat)
+
+est3 <- rdrobust(y=ma.rd3$mkt_share, x=ma.rd3$score, c=0,
+                 h=0.125, p=1, kernel="uniform", vce="hc0",
+                 masspoints="off")
+
+summary(est3)
+
+
+# Estimate the effect of receiving a 3.5-star rating
+ma.rd35 <- ma.data.clean %>%
+  filter(Star_Rating==3 | Star_Rating==3.5) %>%
+  mutate(score = raw_rating - 3.5,
+         treat = (score>=0),
+         window1 = (score>=-.125 & score<=.125),
+         window2 = (score>=-.125 & score<=.125),
+         mkt_share = avg_enrollment/avg_eligibles,
+         ln_share = log(mkt_share),
+         score_treat=score*treat)
+
+est35 <- rdrobust(y=ma.rd35$mkt_share, x=ma.rd35$score, c=0,
+                  h=0.125, p=1, kernel="uniform", vce="hc0",
+                  masspoints="off")
+
+summary(est35)
+
+
+#Question 7
+#Repeat your results for bandwidths of 0.1, 0.12, 0.13, 0.14, and 0.15 (again for 3 and 3.5 stars).
+#Show all results in a graph. 
+#How sensitive are your findings to the choice of bandwidth?
+
+# Define the bandwidths
+bandwidths <- c(0.1, 0.12, 0.13, 0.14, 0.15)
+
+# Initialize an empty data frame to store the results
+results <- data.frame()
+
+# Loop over the bandwidths
+for (h in bandwidths) {
+  # Estimate the effect for 3-star rating
+  est3 <- rdrobust(y=ma.rd3$mkt_share, x=ma.rd3$score, c=0, h=h, p=1, kernel="uniform", vce="hc0", masspoints="off")
+  results <- rbind(results, data.frame(Bandwidth=h, Star_Rating=3, Estimate=est3$coef[1]))
+
+  # Estimate the effect for 3.5-star rating
+  est35 <- rdrobust(y=ma.rd35$mkt_share, x=ma.rd35$score, c=0, h=h, p=1, kernel="uniform", vce="hc0", masspoints="off")
+  results <- rbind(results, data.frame(Bandwidth=h, Star_Rating=3.5, Estimate=est35$coef[1]))
+}
+
+# Plot the results
+Q7 <- ggplot(results, aes(x=Bandwidth, y=Estimate, color=factor(Star_Rating))) +
+  geom_line() +
+  labs(x="Bandwidth", y="Estimate", color="Star Rating") +
+  theme_minimal()
+
+print(Q7)
 
 #Question 8
 # Examine (graphically) whether contracts appear to manipulate the running variable. 
 #In other words, look at the distribution of the running variable before and after the relevent threshold values. What do you find?
 
+install.packages("rddensity")
+install.packages("rdrobust")
+library(rddensity)
+library(rdrobust)
+
+# Create density plots for the scores around the threshold of 3 stars
+dens3 <- rddensity(ma.rd3$score, c=0)
+rdplotdensity(dens3, ma.rd3$score)
+
+# Create density plots for the scores around the threshold of 3.5 stars
+dens35 <- rddensity(ma.rd35$score, c=0)
+rdplotdensity(dens35, ma.rd35$score)
+
 #Question 9 
 #Similar to question 4, examine whether plans just above the threshold values have different characteristics than contracts just below the threshold values. 
 #Use HMO and Part D status as your plan characteristics
 
+
+
+rm(list=c("final.data", "summary_data", "filtered_data", "rating_counts", "ma.penetration", "ffs.costs", "enrollment_summary", "ma.data", "ma.data.clean","ma.rd3", "ma.rd35"))
+save.image("submission 1/Hw4_workspace.Rdata")
