@@ -250,7 +250,6 @@ print(Q7)
 #In other words, look at the distribution of the running variable before and after the relevent threshold values. What do you find?
 
 install.packages("rddensity")
-install.packages("rdrobust")
 library(rddensity)
 library(rdrobust)
 

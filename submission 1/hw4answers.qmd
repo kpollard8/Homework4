@@ -33,7 +33,7 @@ knitr::opts_chunk$set(warning = FALSE)
 load("Hw4_workspace.Rdata")
 ```
 
-Here is the link to my GitHub Repository: 
+Here is the link to my GitHub Repository: https://github.com/kpollard8/Homework4
 
 Here are my answers for Homework 4. I do the coding in a separate `R` script, but here is the cleaned-up version. I run the analysis separately, save the workspace with only the summary stats, figures, and tables that I need, and then load the workspace in the final qmd. My analysis file with answers and code to all the questions is available in the analysis folder. 
 
@@ -50,7 +50,7 @@ Here are my answers for Homework 4. I do the coding in a separate `R` script, bu
 question1
 ```
 
-I think 
+I think the number of plans is sufficient. 
 
 \newpage 
 
@@ -67,7 +67,7 @@ I think
 question2
 ```
 
-The distribution has 
+The distribution has changed because the ratings have gotten higher over time. There were more 2.5s in 2010 and in 2015 there were mostly 4s. 
 
 \newpage 
 
@@ -82,6 +82,7 @@ The distribution has
 question3
 ```
 
+The average benchmark rose from 800 to 840 in 2014 and then drastically decreased after 2015 to less than 800. 
 \newpage 
 
 \vspace{.2in}
@@ -96,6 +97,7 @@ question3
 question4
 ```
 
+It has overall increased from 2010-2014, but then decreased between 2014 and 2015. This follows a similar pattern to benchmark payments. 
 \newpage 
 
 \vspace{.2in}
@@ -118,19 +120,14 @@ knitr::kable(star_rating_counts,
 
 \vspace{.2in}
 \noindent 6. Using the RD estimator with a bandwidth of 0.125, provide an estimate of the effect of receiving a 3-star versus a 2.5 star rating on enrollments. Repeat the exercise to estimate the effects at 3.5 stars, and summarize your results in a table. <br>
+
+This is rendering weridly but the code in my R script gives me a regression table. 
 ```{r}
 #| echo: false
 #| label: ratings3
 #| fig-cap: "3 star vs 2.5 star"
 
-kable(Q6_3, 
-      col.names = c("Method", "Coefficient", "Std. Error", "z-value", "Pr(>|z|)", "CI Lower", "CI Upper"),
-      format.args = list(big.mark = ","), 
-      align = c("l", "c", "c", "c", "c", "c", "c"),
-      caption = "RD Estimation Summary",
-      booktabs = TRUE) %>%
-  kable_styling(latex_options = c("scale_down"))
-
+est3
 ```
 
 
@@ -157,12 +154,16 @@ est35
 Q7
 ```
 
-The findings are not sensitive. 
+The findings are sensitive as a lower rating gives you a lower estimate.  
 
 \newpage 
 
 \vspace{.2in}
 \noindent 8. Examine (graphically) whether contracts appear to manipulate the running variable. In other words, look at the distribution of the running variable before and after the relevent threshold values. What do you find? <br>
+
+This is rendering weridly but the code in my R script gives me two graphs that have differnet colors for different threshold values. 
+
+
 ```{r}
 #| echo: false
 #| label: dens3
@@ -179,15 +180,30 @@ dens3
 dens35
 ```
 
+
+
 \newpage 
 
 \vspace{.2in}
 \noindent 9. Similar to question 4, examine whether plans just above the threshold values have different characteristics than contracts just below the threshold values. Use HMO and Part D status as your plan characteristics.<br>
 
+I'm having trouble finding anything about HMO groups in the plan characteristics. Using the code for number 4, I don't know how to add threshold values. 
 
+If the question is supposed to be similar to question 8, then I would do this code: 
+Create density plots for the scores around the threshold of 3 stars
+dens3 <- rddensity(ma.rd3$score, c=0)
+rdplotdensity(dens3, ma.rd3$score)
+
+Create density plots for the scores around the threshold of 3.5 stars
+dens35 <- rddensity(ma.rd35$score, c=0)
+rdplotdensity(dens35, ma.rd35$score)
+
+But I would add HMO and Part D characteristics. 
 
 \newpage 
 
 \vspace{.2in}
 \noindent 10. Summarize your findings from 5-9. What is the effect of increasing a star rating on enrollments? Briefly explain your results. <br>
+
+The effect of increasing a star rating increases enrollment. This is intuative because higher star ratings signal better quality and performance of the plan to beneficiaries. We can see that MA enrollment is increasing overtime, and you can infer this is because ratings are getting better. 
 
