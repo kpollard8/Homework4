@@ -109,8 +109,8 @@ It has overall increased from 2010-2014, but then decreased between 2014 and 201
 
 library(kableExtra)
 options(knitr.kable.NA = 0)
-knitr::kable(star_rating_counts, 
-             col.names=c("Star Ratings", "Number of Plans"),
+knitr::kable(rounded_summary, 
+             col.names=c("3-star", "3.5-star", "4-star", "4.5-star", "5-star"),
              format.args=list(big.mark=","), booktabs = TRUE) %>%
              kable_styling(latex_options=c("scale_down"))
 

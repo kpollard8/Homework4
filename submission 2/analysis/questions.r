@@ -153,6 +153,15 @@ ma.rounded <- ma.data.clean %>%
          rounded_45 = ifelse(raw_rating >= 4.25 & raw_rating < 4.50 & Star_Rating == 4.50, 1, 0), 
          rounded_50 = ifelse(raw_rating >= 4.50 & raw_rating < 5.00 & Star_Rating == 5.00, 1, 0))
 
+rounded_summary <- ma.rounded %>%
+  summarize(`3-star` = sum(rounded_30),
+            `3.5-star` = sum(rounded_35),
+            `4-star` = sum(rounded_40),
+            `4.5-star` = sum(rounded_45),
+            `5-star` = sum(rounded_50))
+
+rounded_summary
+
 
 # Round the running variable to the nearest 0.5 to determine the star rating
 ma.data.clean <- ma.data.clean %>%
@@ -251,24 +260,64 @@ install.packages("rddensity")
 library(rddensity)
 library(rdrobust)
 
-# Create density plots for the scores around the threshold of 3 stars
-dens3 <- rddensity(ma.rd3$score, c=0)
-rdplotdensity(dens3, ma.rd3$score)
 
-# Create density plots for the scores around the threshold of 3.5 stars
-dens35 <- rddensity(ma.rd35$score, c=0)
-rdplotdensity(dens35, ma.rd35$score)
+# Create density plots for the scores around the threshold of 3 stars (cutoff)
+dens3 <- density(ma.rd3$score, cut = 0)
+plot(dens3, main = "Density Plot for Scores Around the Threshold of 3 Stars")
 
-#ggplot(aes(x=raw_rating)) +
-#geom_density() + 
-#geom_vline(xintercept = 3.25, linetype ='dashed')
+# Create density plots for the scores around the threshold of 3.5 stars (cutoff)
+dens35 <- density(ma.rd35$score, cut = 0)
+plot(dens35, main = "Density Plot for Scores Around the Threshold of 3.5 Stars")
 
 #Question 9 
 #Similar to question 4, examine whether plans just above the threshold values have different characteristics than contracts just below the threshold values. 
 #Use HMO and Part D status as your plan characteristics
 
+# Load necessary libraries
+library(dplyr)
+library(cobalt)
+
+# Create lp.vars
+lp_vars <- final.data %>% 
+  ungroup() %>%
+  filter((raw_rating >= 2.75 - .125 & Star_Rating == 2.5) | 
+           (raw_rating <= 2.75 + .125 & Star_Rating == 3) & 
+           (plan_type == "HMO/HMOPOS")) %>%
+  mutate(rounded = (Star_Rating == 3)) %>%
+  select(plan_type, partd, rounded) %>%
+  filter(complete.cases(.))
+
+# Create lp.covs
+lp_covs <- lp_vars %>% select(plan_type, partd)
+
+# Create plot.30
+plot.30 <- love.plot(bal.tab(lp_covs, treat = lp_vars$rounded), 
+                     colors = "black", 
+                     shapes = "circle") +
+  theme_bw() + 
+  theme(legend.position = "none")
+
+# Create lp.vars
+lp_vars <- ma.data.clean %>% 
+  ungroup() %>%
+  filter((raw_rating >= 3.25 - .125 & Star_Rating == 3) | 
+           (raw_rating <= 3.25 + .125 & Star_Rating == 3.5) & 
+           (plan_type == "HMO/HMOPOS")) %>%
+  mutate(rounded = (Star_Rating == 3.5)) %>%
+  select(plan_type, partd, rounded) %>%
+  filter(complete.cases(.))
+
+# Create lp.covs
+lp_covs <- lp_vars %>% select(plan_type, partd)
+
+# Create plot.35
+plot.35 <- love.plot(bal.tab(lp_covs, treat = lp_vars$rounded), 
+                     colors = "black", 
+                     shapes = "circle") +
+  theme_bw() + 
+  theme(legend.position = "none")
 
 
 
 rm(list=c("final.data", "summary_data", "filtered_data", "rating_counts", "ma.penetration", "ffs.costs", "enrollment_summary", "ma.data", "ma.data.clean","ma.rd3", "ma.rd35"))
-save.image("submission 1/Hw4_workspace.Rdata")
+save.image("submission 2/Hw4_workspace.Rdata")
