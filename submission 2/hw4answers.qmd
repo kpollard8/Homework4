@@ -1,0 +1,209 @@
+---
+title: "Homework 4"
+author: "Kendall Pollard"
+format:
+  pdf:
+    output-file: "pollard-k-hwk4-1"
+    output-ext:  "pdf"
+    header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+---
+
+
+```{r}
+#| include: false
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, readr, readxl, hrbrthemes, fixest,
+               scales, gganimate, gapminder, gifski, png, tufte, plotly, OECD,
+               ggrepel, survey, foreign, devtools, pdftools, kableExtra, modelsummary,
+               kableExtra)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+
+```{r}
+#| include: false
+#| eval: true
+load("Hw4_workspace.Rdata")
+```
+
+Here is the link to my GitHub Repository: https://github.com/kpollard8/Homework4
+
+Here are my answers for Homework 4. I do the coding in a separate `R` script, but here is the cleaned-up version. I run the analysis separately, save the workspace with only the summary stats, figures, and tables that I need, and then load the workspace in the final qmd. My analysis file with answers and code to all the questions is available in the analysis folder. 
+
+\newpage 
+
+\vspace{.2in}
+\noindent 1. Remove all SNPs, 800-series plans, and prescription drug only plans (i.e., plans that do not offer Part C benefits). Provide a box and whisker plot showing the distribution of plan counts by county over time. Do you think that the number of plans is sufficient, too few, or too many? <br>
+
+```{r}
+#| echo: false
+#| label: plancountscounty
+#| fig-cap: Question 1 Graph
+
+question1
+```
+
+I think the number of plans is sufficient. 
+
+\newpage 
+
+\vspace{.2in}
+
+\vspace{.2in}
+\noindent 2. Provide bar graphs showing the distribution of star ratings in 2010, 2012, and 2015. How has this distribution changed over time? <br>
+
+```{r}
+#| echo: false
+#| label: starratingsdist
+#| fig-cap: Question 2 Graph
+
+question2
+```
+
+The distribution has changed because the ratings have gotten higher over time. There were more 2.5s in 2010 and in 2015 there were mostly 4s. 
+
+\newpage 
+
+\vspace{.2in}
+\noindent 3. Plot the average benchmark payment over time from 2010 through 2015. How much has the average benchmark payment risen over the years? <br>
+
+```{r}
+#| echo: false
+#| label: avbench
+#| fig-cap: Question 3 Graph
+
+question3
+```
+
+The average benchmark rose from 800 to 840 in 2014 and then drastically decreased after 2015 to less than 800. 
+\newpage 
+
+\vspace{.2in}
+\noindent 4. Plot the average share of Medicare Advantage (relative to all Medicare eligibles) over time from 2010 through 2015. Has Medicare Advantage increased or decreased in popularity? How does this share correlate with benchmark payments? <br>
+
+
+```{r}
+#| echo: false
+#| label: shareofMA
+#| fig-cap: Question 4 Graph
+
+question4
+```
+
+It has overall increased from 2010-2014, but then decreased between 2014 and 2015. This follows a similar pattern to benchmark payments. 
+\newpage 
+
+\vspace{.2in}
+\noindent 5. Calculate the running variable underlying the star rating. Provide a table showing the number of plans that are rounded up into a 3-star, 3.5-star, 4-star, 4.5-star, and 5-star rating. <br>
+```{r} 
+#| echo: false
+#| label: runningvariable
+#| tbl-cap: "Number of rounded plans"
+
+library(kableExtra)
+options(knitr.kable.NA = 0)
+knitr::kable(star_rating_counts, 
+             col.names=c("Star Ratings", "Number of Plans"),
+             format.args=list(big.mark=","), booktabs = TRUE) %>%
+             kable_styling(latex_options=c("scale_down"))
+
+```
+
+\newpage 
+
+\vspace{.2in}
+\noindent 6. Using the RD estimator with a bandwidth of 0.125, provide an estimate of the effect of receiving a 3-star versus a 2.5 star rating on enrollments. Repeat the exercise to estimate the effects at 3.5 stars, and summarize your results in a table. <br>
+
+This is rendering weridly but the code in my R script gives me a regression table. 
+```{r}
+#| echo: false
+#| label: ratings3
+#| fig-cap: "3 star vs 2.5 star"
+
+est3
+```
+
+
+```{r} 
+#| echo: false
+#| label: ratings35
+#| fig-cap: "3.5 star vs 3 star"
+
+est35
+```
+
+
+\newpage 
+
+\vspace{.2in}
+\noindent 7. Repeat your results for bandwidhts of 0.1, 0.12, 0.13, 0.14, and 0.15 (again for 3 and 3.5 stars). Show all of the results in a graph. How sensitive are your findings to the choice of bandwidth? <br>
+
+
+```{r}
+#| echo: false
+#| label: diffbandwiths
+#| fig-cap: Question 7 Graph
+
+Q7
+```
+
+The findings are sensitive as a lower rating gives you a lower estimate.  
+
+\newpage 
+
+\vspace{.2in}
+\noindent 8. Examine (graphically) whether contracts appear to manipulate the running variable. In other words, look at the distribution of the running variable before and after the relevent threshold values. What do you find? <br>
+
+This is rendering weridly but the code in my R script gives me two graphs that have differnet colors for different threshold values. 
+
+
+```{r}
+#| echo: false
+#| label: dens3
+#| fig-cap: Question 8 First Graph
+
+dens3
+```
+
+```{r}
+#| echo: false
+#| label: dens35
+#| fig-cap: Question 8 Second Graph
+
+dens35
+```
+
+
+
+\newpage 
+
+\vspace{.2in}
+\noindent 9. Similar to question 4, examine whether plans just above the threshold values have different characteristics than contracts just below the threshold values. Use HMO and Part D status as your plan characteristics.<br>
+
+I'm having trouble finding anything about HMO groups in the plan characteristics. Using the code for number 4, I don't know how to add threshold values. 
+
+If the question is supposed to be similar to question 8, then I would do this code: 
+Create density plots for the scores around the threshold of 3 stars
+dens3 <- rddensity(ma.rd3$score, c=0)
+rdplotdensity(dens3, ma.rd3$score)
+
+Create density plots for the scores around the threshold of 3.5 stars
+dens35 <- rddensity(ma.rd35$score, c=0)
+rdplotdensity(dens35, ma.rd35$score)
+
+But I would add HMO and Part D characteristics. 
+
+\newpage 
+
+\vspace{.2in}
+\noindent 10. Summarize your findings from 5-9. What is the effect of increasing a star rating on enrollments? Briefly explain your results. <br>
+
+The effect of increasing a star rating increases enrollment. This is intuative because higher star ratings signal better quality and performance of the plan to beneficiaries. We can see that MA enrollment is increasing overtime, and you can infer this is because ratings are getting better. 
+
