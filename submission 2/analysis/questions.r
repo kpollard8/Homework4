@@ -12,20 +12,28 @@ library(ggplot2)
 # Provide a box and whisker plot showing the distribution of plan counts by county over time. 
 # Do you think that the number of plans is sufficient, too few, or too many?
 
+
 # Group data by county and year, and summarize plan counts
 summary_data <- final.data %>%
   group_by(county, year) %>%
   summarize(planid = n())
 
+# Calculate upper and lower bounds for outliers
+upper_bound <- quantile(summary_data$planid, 0.75) + 1.5 * IQR(summary_data$planid)
+lower_bound <- quantile(summary_data$planid, 0.25) - 1.5 * IQR(summary_data$planid)
+
+# Filter out outliers
+summary_data_filtered <- summary_data %>%
+  filter(planid <= upper_bound, planid >= lower_bound)
+
 # Create a boxplot to visualize the distribution of plan counts by county over time
-question1<- ggplot(summary_data, aes(x = factor(year), y = planid)) +
-  geom_boxplot() +
+question1 <- ggplot(summary_data_filtered, aes(x = factor(year), y = planid)) +
+  geom_boxplot(outlier.shape = NA) +  # Remove outliers from the plot
   labs(x = "Year", y = "Plan Counts", title = "Distribution of Plan Counts by County Over Time") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels if needed
 
 question1
-
 
 #Question 2 
 # Provide bar graphs showing the distribution of star ratings in 2010, 2012, and 2015. 
@@ -88,47 +96,28 @@ question3
 # Plot the average share of Medicare Advantage (relative to all Medicare eligibles) over time from 2010 through 2015. 
 #Has Medicare Advantage increased or decreased in popularity? How does this share correlate with benchmark payments?
 
-ma.penetration<- read_rds("data/output/ma_penetration.rds")
-ffs.costs<- read_rds("data/output/ffs_costs.rds")
+# Load the data
+ma.data <- readRDS("data/output/final_ma_data.rds")
 
-enrollment_summary <- ffs.costs %>%
-  group_by(year) %>%
-  summarize(total_parta_enroll = sum(parta_enroll, na.rm = TRUE))
+# Calculate market share data
+mkt.share.data <- ma.data %>%
+  group_by(fips, year) %>%
+  summarize(enroll = first(avg_enrolled),
+            medicare = first(avg_eligibles),
+            bench = mean(ma_rate, na.rm = TRUE)) %>%
+  mutate(mkt_share = enroll / medicare)
 
-# Print or view the enrollment summary
-print(enrollment_summary)
+# Create ggplot object
+ma.share <- ggplot(mkt.share.data, aes(x = year, y = mkt_share))
 
-ma_eligibles <- ma.penetration %>%
-  group_by(year) %>%
-  summarize(ma_eligibles = sum(avg_eligibles, na.rm = TRUE))
+# Add stat_summary layer for summary statistics
+ma.share <- ma.share +
+  stat_summary(fun = mean, geom = "line") + 
+  labs(x = "Year", y = "Market Share", title = "Market Share Over Years") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels if needed
 
-# Print or view the result
-print(ma_eligibles)
-
-# Join the enrollment summary with MA eligibles data by year
-total_eligibles <- enrollment_summary %>%
-  left_join(ma_eligibles, by = "year") %>%
-  # Calculate total Medicare eligibles by adding MA eligibles and total Part A enrollments
-  mutate(total_medicare_eligibles = ma_eligibles + total_parta_enroll)
-
-# Print or view the result
-print(total_eligibles)
-
-# Assuming your data spans from 2010 through 2015, you can filter the total_eligibles dataframe accordingly
-filtered_data <- total_eligibles %>%
-  filter(year >= 2010 & year <= 2015)
-
-# Calculate the average share of Medicare Advantage relative to all Medicare eligibles
-filtered_data <- filtered_data %>%
-  mutate(average_ma_share = ma_eligibles / total_medicare_eligibles)
-
-# Plot the data
-question4<- ggplot(filtered_data, aes(x = year, y = average_ma_share)) +
-  geom_line() +
-  geom_point() +
-  labs(x = "Year", y = "Average Share of Medicare Advantage", title = "Average Share of Medicare Advantage Over Time (2010-2015)")
-
-question4
+ma.share
 
 #Question 5
 # Calculate the running variable underlying the star rating. 
@@ -155,6 +144,15 @@ ma.data.clean <- ma.data.clean %>%
   select(contractid, planid, fips, avg_enrollment, state, county, raw_rating, partc_score,
          avg_eligibles, avg_enrolled, premium_partc, risk_ab, Star_Rating,
          bid, avg_ffscost, ma_rate)
+
+
+ma.rounded <- ma.data.clean %>%
+  mutate(rounded_30 = ifelse(raw_rating >= 2.75 & raw_rating < 3.00 & Star_Rating == 3.0, 1, 0),
+         rounded_35 = ifelse(raw_rating >= 3.25 & raw_rating < 3.50 & Star_Rating == 3.5, 1, 0),
+         rounded_40 = ifelse(raw_rating >= 3.75 & raw_rating < 4.00 & Star_Rating == 4.00, 1, 0), 
+         rounded_45 = ifelse(raw_rating >= 4.25 & raw_rating < 4.50 & Star_Rating == 4.50, 1, 0), 
+         rounded_50 = ifelse(raw_rating >= 4.50 & raw_rating < 5.00 & Star_Rating == 5.00, 1, 0))
+
 
 # Round the running variable to the nearest 0.5 to determine the star rating
 ma.data.clean <- ma.data.clean %>%
@@ -261,9 +259,14 @@ rdplotdensity(dens3, ma.rd3$score)
 dens35 <- rddensity(ma.rd35$score, c=0)
 rdplotdensity(dens35, ma.rd35$score)
 
+#ggplot(aes(x=raw_rating)) +
+#geom_density() + 
+#geom_vline(xintercept = 3.25, linetype ='dashed')
+
 #Question 9 
 #Similar to question 4, examine whether plans just above the threshold values have different characteristics than contracts just below the threshold values. 
 #Use HMO and Part D status as your plan characteristics
+
 
 
 
