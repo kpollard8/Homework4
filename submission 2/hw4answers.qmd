@@ -3,7 +3,7 @@ title: "Homework 4"
 author: "Kendall Pollard"
 format:
   pdf:
-    output-file: "pollard-k-hwk4-1"
+    output-file: "pollard-k-hwk4-2"
     output-ext:  "pdf"
     header-includes:
       - \usepackage{float}
