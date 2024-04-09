@@ -160,18 +160,6 @@ rounded_summary <- ma.rounded %>%
 rounded_summary
 
 
-# Round the running variable to the nearest 0.5 to determine the star rating
-ma.data.clean <- ma.data.clean %>%
-  mutate(star_rating = round(raw_rating * 2) / 2)
-
-# Count the number of plans in each star rating category
-star_rating_counts <- ma.data.clean %>%
-  group_by(star_rating) %>%
-  summarize(number_of_plans = n())
-
-# Print or view the table
-print(star_rating_counts)
-
 
 #Question 6 
 # Using the RD estimator with a bandwidth of 0.125, provide an estimate of the effect of receiving a 3-star versus a 2.5 star rating on enrollments. 
@@ -200,19 +188,23 @@ est3 <- rdrobust(y=ma.rd3$mkt_share, x=ma.rd3$score, c=0,
 
 summary(est3)
 
-est3_summary <- summary(est3)
 
-# Extracting relevant information from the summary object
-est3_coef <- est3_summary$coef
-est3_se <- est3_summary$se
+# Extract the coefficient, standard error, z-value, and p-value
+coef <- est3$coef
+std_err <- est3$se
+z_value <- est3$z
+p_value <- est3$p
 
-# Creating a data frame for the coefficients and standard errors
+# Create a data frame
 est3_table <- data.frame(
-  Coefficients = est3_coef,
-  Standard_Errors = est3_se
+  Rating = c("3 vs 2.5"),
+  Coefficient = coef,
+  Std.Error = std_err,
+  Z.Value = z_value,
+  P.Value = p_value
 )
 
-
+print(est3_table)
 
 # Estimate the effect of receiving a 3.5-star rating
 ma.rd35 <- ma.data.clean %>%
@@ -231,9 +223,23 @@ est35 <- rdrobust(y=ma.rd35$mkt_share, x=ma.rd35$score, c=0,
 
 summary(est35)
 
-# Extract coefficients and standard errors
-est35_summary <- summary(est35)
+# Extract the coefficient, standard error, z-value, and p-value
+coef <- est35$coef
+std_err <- est35$se
+z_value <- est35$z
+p_value <- est35$p
 
+# Create a data frame
+est35_table <- data.frame(
+  Rating = c("3 vs 3.5"),
+  Coefficient = coef,
+  Std.Error = std_err,
+  Z.Value = z_value,
+  P.Value = p_value
+)
+
+# Print the results
+print(est35_table)
 
 #Question 7
 #Repeat your results for bandwidths of 0.1, 0.12, 0.13, 0.14, and 0.15 (again for 3 and 3.5 stars).
