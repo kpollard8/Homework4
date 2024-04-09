@@ -130,6 +130,33 @@ This is rendering weridly but the code in my R script gives me a regression tabl
 est3
 ```
 
+```{r} 
+#| echo: false
+#| label: est3table
+#| tbl-cap: "Table 3 star vs 2.5 star"
+
+#library(kableExtra)
+#options(knitr.kable.NA = 0)
+#knitr::kable(est3_table, align = 'c') %>%
+  #kableExtra::kable_styling(bootstrap_options = "striped")
+
+```
+
+
+
+
+```{r} 
+#| echo: false
+#| label: est35table
+#| tbl-cap: "Table 3.5 star vs 3 star"
+
+#library(kableExtra)
+#options(knitr.kable.NA = 0)
+#knitr::kable(est35_table, align = 'c') %>%
+  #kableExtra::kable_styling(bootstrap_options = "striped")
+
+```
+
 
 ```{r} 
 #| echo: false
@@ -169,7 +196,7 @@ This is rendering weridly but the code in my R script gives me two graphs that h
 #| label: dens3
 #| fig-cap: Question 8 First Graph
 
-dens3
+plot(dens3)
 ```
 
 ```{r}
@@ -177,7 +204,7 @@ dens3
 #| label: dens35
 #| fig-cap: Question 8 Second Graph
 
-dens35
+plot(dens35)
 ```
 
 
@@ -187,18 +214,23 @@ dens35
 \vspace{.2in}
 \noindent 9. Similar to question 4, examine whether plans just above the threshold values have different characteristics than contracts just below the threshold values. Use HMO and Part D status as your plan characteristics.<br>
 
-I'm having trouble finding anything about HMO groups in the plan characteristics. Using the code for number 4, I don't know how to add threshold values. 
 
-If the question is supposed to be similar to question 8, then I would do this code: 
-Create density plots for the scores around the threshold of 3 stars
-dens3 <- rddensity(ma.rd3$score, c=0)
-rdplotdensity(dens3, ma.rd3$score)
+```{r}
+#| echo: false
+#| label: plot3
+#| fig-cap: Question 9 First Graph
 
-Create density plots for the scores around the threshold of 3.5 stars
-dens35 <- rddensity(ma.rd35$score, c=0)
-rdplotdensity(dens35, ma.rd35$score)
+plot.30
+```
 
-But I would add HMO and Part D characteristics. 
+
+```{r}
+#| echo: false
+#| label: plot35
+#| fig-cap: Question 9 Second Graph
+
+plot.35
+```
 
 \newpage 
 
@@ -206,4 +238,6 @@ But I would add HMO and Part D characteristics.
 \noindent 10. Summarize your findings from 5-9. What is the effect of increasing a star rating on enrollments? Briefly explain your results. <br>
 
 The effect of increasing a star rating increases enrollment. This is intuative because higher star ratings signal better quality and performance of the plan to beneficiaries. We can see that MA enrollment is increasing overtime, and you can infer this is because ratings are getting better. 
+
+Also, there is debate about whether MA saves the government money. If MA enrollment is increasing, and it's becoming more popular among healthy beneficiaries, this means the government may be losing money due to adverse selection of more sick patients enrolled in traditional medicare. 
 

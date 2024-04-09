@@ -39,8 +39,6 @@ question1
 # Provide bar graphs showing the distribution of star ratings in 2010, 2012, and 2015. 
 #How has this distribution changed over time?
 
-library(ggplot2)
-
 # Filter the data for the years 2010, 2012, and 2015
 filtered_data <- final.data %>%
   filter(year %in% c(2010, 2012, 2015))
@@ -77,7 +75,6 @@ average_benchmark_payments <- filtered_data %>%
 # Print or view the result
 print(average_benchmark_payments)
 
-library(ggplot2)
 
 # Assuming average_benchmark_payments is the data frame containing average benchmark payments for each year
 
@@ -203,6 +200,19 @@ est3 <- rdrobust(y=ma.rd3$mkt_share, x=ma.rd3$score, c=0,
 
 summary(est3)
 
+est3_summary <- summary(est3)
+
+# Extracting relevant information from the summary object
+est3_coef <- est3_summary$coef
+est3_se <- est3_summary$se
+
+# Creating a data frame for the coefficients and standard errors
+est3_table <- data.frame(
+  Coefficients = est3_coef,
+  Standard_Errors = est3_se
+)
+
+
 
 # Estimate the effect of receiving a 3.5-star rating
 ma.rd35 <- ma.data.clean %>%
@@ -220,6 +230,9 @@ est35 <- rdrobust(y=ma.rd35$mkt_share, x=ma.rd35$score, c=0,
                   masspoints="off")
 
 summary(est35)
+
+# Extract coefficients and standard errors
+est35_summary <- summary(est35)
 
 
 #Question 7
@@ -277,8 +290,28 @@ plot(dens35, main = "Density Plot for Scores Around the Threshold of 3.5 Stars")
 library(dplyr)
 library(cobalt)
 
+ma.data.clean9 <- ma.data %>%
+  filter(year == 2010)
+
+ma.data.clean9 <- ma.data.clean9 %>%
+  mutate(raw_rating=rowMeans(
+    cbind(breastcancer_screen,rectalcancer_screen,cv_cholscreen,
+          glaucoma_test,monitoring,flu_vaccine,pn_vaccine,physical_health,
+          mental_health,osteo_test,physical_monitor,primaryaccess
+          ,nodelays,carequickly,
+          overallrating_care,overallrating_plan,
+          doctor_communicate,customer_service,osteo_manage,
+          diabetes_eye,diabetes_kidney,diabetes_bloodsugar,
+          diabetes_chol,bloodpressure,ra_manage,
+          copd_test,bladder,falling,appeals_timely,
+          appeals_review),
+    na.rm=T)) %>%
+  select(contractid, planid, fips, avg_enrollment, state, county, raw_rating, partc_score,
+         avg_eligibles, avg_enrolled, premium_partc, risk_ab, Star_Rating,
+         bid, avg_ffscost, ma_rate, plan_type, partd)
+
 # Create lp.vars
-lp_vars <- final.data %>% 
+lp_vars <- ma.data.clean9 %>% 
   ungroup() %>%
   filter((raw_rating >= 2.75 - .125 & Star_Rating == 2.5) | 
            (raw_rating <= 2.75 + .125 & Star_Rating == 3) & 
@@ -298,7 +331,7 @@ plot.30 <- love.plot(bal.tab(lp_covs, treat = lp_vars$rounded),
   theme(legend.position = "none")
 
 # Create lp.vars
-lp_vars <- ma.data.clean %>% 
+lp_vars <- ma.data.clean9 %>% 
   ungroup() %>%
   filter((raw_rating >= 3.25 - .125 & Star_Rating == 3) | 
            (raw_rating <= 3.25 + .125 & Star_Rating == 3.5) & 
@@ -319,5 +352,5 @@ plot.35 <- love.plot(bal.tab(lp_covs, treat = lp_vars$rounded),
 
 
 
-rm(list=c("final.data", "summary_data", "filtered_data", "rating_counts", "ma.penetration", "ffs.costs", "enrollment_summary", "ma.data", "ma.data.clean","ma.rd3", "ma.rd35"))
+rm(list=c("final.data", "summary_data", "filtered_data", "rating_counts", "ma.penetration", "ffs.costs", "enrollment_summary", "ma.data", "ma.data.clean","ma.data.clean9","ma.rd3", "ma.rd35"))
 save.image("submission 2/Hw4_workspace.Rdata")
