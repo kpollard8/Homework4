@@ -171,6 +171,30 @@ if (!require("rdrobust")) install.packages("rdrobust")
 # Load the 'rdrobust' package
 library(rdrobust)
 
+# Questions 2-3
+# First Model
+model1 <- lm(mkt_share ~ treat + score + treat_score,
+             data = (ma.data.clean %>%
+                        filter(raw_rating >= (2.75 - 0.125),
+                               raw_rating <= (2.75 + 0.125),
+                               Star_Rating %in% c(2, 2.5, 3.0)) %>%
+                        mutate(treat = (Star_Rating == 3.0),
+                               score = raw_rating - 2.75,
+                               treat_score = treat * score)))
+
+
+
+# Second Model
+model2 <- lm(mkt_share ~ treat + score + treat_score,
+             data = (ma.data.clean %>%
+                        filter(raw_rating >= (3.25 - 0.125),
+                               raw_rating <= (3.25 + 0.125),
+                               Star_Rating %in% c(3.0, 3.5)) %>%
+                        mutate(treat = (Star_Rating >= 3.5),
+                               score = raw_rating - 3.25,
+                               treat_score = treat * score)))
+
+
 # Estimate the effect of receiving a 3-star versus a 2.5-star rating
 ma.rd3 <- ma.data.clean %>%
   filter(Star_Rating==2.5 | Star_Rating==3) %>%

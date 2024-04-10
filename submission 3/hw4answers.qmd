@@ -50,7 +50,7 @@ Here are my answers for Homework 4. I do the coding in a separate `R` script, bu
 question1
 ```
 
-I think the number of plans is sufficient. 
+I think the number of plans is sufficient. The fact that there are around 20 plans in each county suggests a reasonable level of choice and competition among healthcare plans. This number indicates that consumers have multiple options to choose from, which is generally considered beneficial as it allows them to select plans that best suit their needs in terms of coverage, cost, and provider network.
 
 \newpage 
 
@@ -67,7 +67,7 @@ I think the number of plans is sufficient.
 question2
 ```
 
-The distribution has changed because the ratings have gotten higher over time. There were more 2.5s in 2010 and in 2015 there were mostly 4s. 
+The distribution has changed because the ratings have gotten higher over time. There were more 2.5s in 2010, then in 2012 it was concentrated in 3s, and then the most 4s were in 2015. 
 
 \newpage 
 
@@ -82,7 +82,6 @@ The distribution has changed because the ratings have gotten higher over time. T
 question3
 ```
 
-The average benchmark rose from 800 to 840 in 2014 and then drastically decreased after 2015 to less than 800. 
 \newpage 
 
 \vspace{.2in}
@@ -97,7 +96,8 @@ The average benchmark rose from 800 to 840 in 2014 and then drastically decrease
 ma.share
 ```
 
-It has overall increased from 2010-2015.  
+It has overall increased in popularity from 2010-2015. It somewhat correlates with the benchmark payment because it also increased until 2014, but then they seem to not correlate after 2014. 
+
 \newpage 
 
 \vspace{.2in}
