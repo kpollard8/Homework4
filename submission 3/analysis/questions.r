@@ -148,7 +148,7 @@ ma.rounded <- ma.data.clean %>%
          rounded_35 = ifelse(raw_rating >= 3.25 & raw_rating < 3.50 & Star_Rating == 3.5, 1, 0),
          rounded_40 = ifelse(raw_rating >= 3.75 & raw_rating < 4.00 & Star_Rating == 4.00, 1, 0), 
          rounded_45 = ifelse(raw_rating >= 4.25 & raw_rating < 4.50 & Star_Rating == 4.50, 1, 0), 
-         rounded_50 = ifelse(raw_rating >= 4.50 & raw_rating < 5.00 & Star_Rating == 5.00, 1, 0))
+         rounded_50 = ifelse(raw_rating >= 4.75 & raw_rating < 5.00 & Star_Rating == 5.00, 1, 0))
 
 rounded_summary <- ma.rounded %>%
   summarize(`3-star` = sum(rounded_30),
@@ -174,7 +174,7 @@ library(rdrobust)
 # Estimate the effect of receiving a 3-star versus a 2.5-star rating
 ma.rd3 <- ma.data.clean %>%
   filter(Star_Rating==2.5 | Star_Rating==3) %>%
-  mutate(score = raw_rating - 3,
+  mutate(score = raw_rating - 2.75,
          treat = (score>=0),
          window1 = (score>=-.125 & score<=.125),
          window2 = (score>=-.125 & score<=.125),
@@ -187,6 +187,39 @@ est3 <- rdrobust(y=ma.rd3$mkt_share, x=ma.rd3$score, c=0,
                  masspoints="off")
 
 summary(est3)
+
+
+ma.rd3 <- ma.data.clean %>%
+  filter(Star_Rating == 2.5 | Star_Rating == 3) %>%
+  mutate(score = raw_rating - 2.75, 
+         treat = as.numeric(score),
+         window1 = (score >= -0.125 & score <= 0.125),
+         window2 = (score >= -0.125 & score <= 0.125),
+         mkt_share = avg_enrollment / avg_eligibles,
+         ln_share = log(mkt_share),
+         score_treat = score * treat)
+
+est3 <- rdrobust(y = ma.rd3$ln_share,  # Assuming ln_share is the outcome of interest
+                 x = ma.rd3$raw_rating,  # Assuming raw_rating is the forcing variable
+                 c = 2.75,  # Critical value where the treatment effect changes
+                 h = 0.125,  # Bandwidth
+                 p = 1,  # Polynomial order
+                 kernel = "uniform",  # Kernel type
+                 vce = "hc0",  # Variance-covariance estimator
+                 masspoints = "off"  # Mass points handling
+)
+
+summary(est3)
+
+
+star30 <- lm(mkt_share ~ treat + score + treat_score, 
+            data= ma.data.clean %>%
+            filter(raw_rating >= (2.75-0.125), 
+                  raw_rating<= (2.75+0.125), 
+                  Star_rating %in% c(2.5,3))%>%
+            mutate(treat=(Star_rating ==3.0)) 
+            )
+
 
 
 # Extract the coefficient, standard error, z-value, and p-value
@@ -209,7 +242,7 @@ print(est3_table)
 # Estimate the effect of receiving a 3.5-star rating
 ma.rd35 <- ma.data.clean %>%
   filter(Star_Rating==3 | Star_Rating==3.5) %>%
-  mutate(score = raw_rating - 3.5,
+  mutate(score = raw_rating - 3.25,
          treat = (score>=0),
          window1 = (score>=-.125 & score<=.125),
          window2 = (score>=-.125 & score<=.125),
@@ -359,4 +392,4 @@ plot.35 <- love.plot(bal.tab(lp_covs, treat = lp_vars$rounded),
 
 
 rm(list=c("final.data", "summary_data", "filtered_data", "rating_counts", "ma.penetration", "ffs.costs", "enrollment_summary", "ma.data", "ma.data.clean","ma.data.clean9","ma.rd3", "ma.rd35"))
-save.image("submission 2/Hw4_workspace.Rdata")
+save.image("submission 3/Hw4_workspace.Rdata")

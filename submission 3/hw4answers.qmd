@@ -3,7 +3,7 @@ title: "Homework 4"
 author: "Kendall Pollard"
 format:
   pdf:
-    output-file: "pollard-k-hwk4-2"
+    output-file: "pollard-k-hwk4-3"
     output-ext:  "pdf"
     header-includes:
       - \usepackage{float}
@@ -97,7 +97,7 @@ The average benchmark rose from 800 to 840 in 2014 and then drastically decrease
 ma.share
 ```
 
-It has overall increased from 2010-2014, but then decreased between 2014 and 2015. This follows a similar pattern to benchmark payments. 
+It has overall increased from 2010-2015.  
 \newpage 
 
 \vspace{.2in}
