@@ -171,35 +171,11 @@ if (!require("rdrobust")) install.packages("rdrobust")
 # Load the 'rdrobust' package
 library(rdrobust)
 
-# Questions 2-3
-# First Model
-model1 <- lm(mkt_share ~ treat + score + treat_score,
-             data = (ma.data.clean %>%
-                        filter(raw_rating >= (2.75 - 0.125),
-                               raw_rating <= (2.75 + 0.125),
-                               Star_Rating %in% c(2, 2.5, 3.0)) %>%
-                        mutate(treat = (Star_Rating == 3.0),
-                               score = raw_rating - 2.75,
-                               treat_score = treat * score)))
-
-
-
-# Second Model
-model2 <- lm(mkt_share ~ treat + score + treat_score,
-             data = (ma.data.clean %>%
-                        filter(raw_rating >= (3.25 - 0.125),
-                               raw_rating <= (3.25 + 0.125),
-                               Star_Rating %in% c(3.0, 3.5)) %>%
-                        mutate(treat = (Star_Rating >= 3.5),
-                               score = raw_rating - 3.25,
-                               treat_score = treat * score)))
-
-
 # Estimate the effect of receiving a 3-star versus a 2.5-star rating
 ma.rd3 <- ma.data.clean %>%
   filter(Star_Rating==2.5 | Star_Rating==3) %>%
   mutate(score = raw_rating - 2.75,
-         treat = (score>=0),
+         treat = (Star_Rating==3.0),
          window1 = (score>=-.125 & score<=.125),
          window2 = (score>=-.125 & score<=.125),
          mkt_share = avg_enrollment/avg_eligibles,
@@ -211,39 +187,6 @@ est3 <- rdrobust(y=ma.rd3$mkt_share, x=ma.rd3$score, c=0,
                  masspoints="off")
 
 summary(est3)
-
-
-ma.rd3 <- ma.data.clean %>%
-  filter(Star_Rating == 2.5 | Star_Rating == 3) %>%
-  mutate(score = raw_rating - 2.75, 
-         treat = as.numeric(score),
-         window1 = (score >= -0.125 & score <= 0.125),
-         window2 = (score >= -0.125 & score <= 0.125),
-         mkt_share = avg_enrollment / avg_eligibles,
-         ln_share = log(mkt_share),
-         score_treat = score * treat)
-
-est3 <- rdrobust(y = ma.rd3$ln_share,  # Assuming ln_share is the outcome of interest
-                 x = ma.rd3$raw_rating,  # Assuming raw_rating is the forcing variable
-                 c = 2.75,  # Critical value where the treatment effect changes
-                 h = 0.125,  # Bandwidth
-                 p = 1,  # Polynomial order
-                 kernel = "uniform",  # Kernel type
-                 vce = "hc0",  # Variance-covariance estimator
-                 masspoints = "off"  # Mass points handling
-)
-
-summary(est3)
-
-
-star30 <- lm(mkt_share ~ treat + score + treat_score, 
-            data= ma.data.clean %>%
-            filter(raw_rating >= (2.75-0.125), 
-                  raw_rating<= (2.75+0.125), 
-                  Star_rating %in% c(2.5,3))%>%
-            mutate(treat=(Star_rating ==3.0)) 
-            )
-
 
 
 # Extract the coefficient, standard error, z-value, and p-value
@@ -393,6 +336,9 @@ plot.30 <- love.plot(bal.tab(lp_covs, treat = lp_vars$rounded),
   theme_bw() + 
   theme(legend.position = "none")
 
+plot.30
+
+
 # Create lp.vars
 lp_vars <- ma.data.clean9 %>% 
   ungroup() %>%
@@ -413,7 +359,7 @@ plot.35 <- love.plot(bal.tab(lp_covs, treat = lp_vars$rounded),
   theme_bw() + 
   theme(legend.position = "none")
 
-
+plot.35
 
 rm(list=c("final.data", "summary_data", "filtered_data", "rating_counts", "ma.penetration", "ffs.costs", "enrollment_summary", "ma.data", "ma.data.clean","ma.data.clean9","ma.rd3", "ma.rd35"))
 save.image("submission 3/Hw4_workspace.Rdata")

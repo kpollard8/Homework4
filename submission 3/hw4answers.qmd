@@ -178,7 +178,8 @@ kable(est35_table, caption = "RD Estimator With a Bandwidth of 0.125, Provide an
 Q7
 ```
 
-The findings are sensitive as a lower rating gives you a lower estimate.  
+The findings are sensitive as the estimates get higher with larger bandwith. 
+A rating of 3 increases at a more drastic rate than 3.5. People care about avoiding "bad" plans but don't necessarily care if their plan is only marginally worse than another, if they both have "good" ratings. 
 
 \newpage 
 
@@ -236,4 +237,6 @@ plot.35
 The effect of increasing a star rating increases enrollment. This is intuative because higher star ratings signal better quality and performance of the plan to beneficiaries. We can see that MA enrollment is increasing overtime, and you can infer this is because ratings are getting better. 
 
 Also, there is debate about whether MA saves the government money. If MA enrollment is increasing, and it's becoming more popular among healthy beneficiaries, this means the government may be losing money due to adverse selection of more sick patients enrolled in traditional medicare. 
+
+Also, we know that the jump from 2.5 to 3 may be more effective than the jump from 3 to 3.5. This is also intuative because people want to avoid "bad plans" but may not care if two already "good" plans if one is marginally better. 
 
